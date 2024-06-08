@@ -35,7 +35,6 @@ regd_users.post("/login", (req,res) => {
   if (!username || !password) {
       return res.status(404).json({message: "Error logging in"});
   }
-
   if (authenticatedUser(username,password)) {
     let accessToken = jwt.sign({
       data: password
@@ -48,15 +47,41 @@ regd_users.post("/login", (req,res) => {
   } else {
     return res.status(208).json({message: "Invalid Login. Check username and password"});
   }
-  //Write your code here
-  //return res.status(300).json({message: "Yet to be implemented"});
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn = req.params.isbn;
+  const username = req.session.authorization.username;
+  const review = req.query.review;
+  if ( ! books[isbn].reviews[username] ) {
+        books[isbn].reviews[username] =  review;
+        console.log("New review:",books[isbn].reviews);
+  } else {
+        if ( books[isbn].reviews[username] != review) {
+                books[isbn].reviews[username] = review;
+		console.log("Updated review:",books[isbn].reviews);
+        }
+  }
+  return res.send("The review for the book with ISBN " + isbn + " has been added/updated.");
 });
+
+// Delete an user review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  const username = req.session.authorization.username;
+  if ( books[isbn].reviews[username] ) {
+    console.log("Delete review:",isbn, username);
+    delete books[isbn].reviews[username];
+    return res.send("Reviews for the ISBN " + isbn + " posted by the user " + username + " deleted.");
+  } else {
+    return res.send("Thre is no review for ISBN " + isbn + " posted by the user " + username );
+  }
+});
+
+
+
+
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;

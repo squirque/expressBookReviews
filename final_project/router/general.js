@@ -54,4 +54,52 @@ public_users.get('/review/:isbn',function (req, res) {
   return res.send(JSON.stringify(books[isbn].reviews,null,4))
 });
 
+public_users.get('/reviewgood/:isbn',function (req, res) {
+  const isbn = req.params.isbn;
+  const username = "myself";
+  const review = "good";
+  if ( ! books[isbn].reviews[username] ) {
+	console.log("No review:", isbn, username);
+	books[isbn].reviews[username] =  review;
+  } else {
+	console.log("Review:", isbn, username, books[isbn].reviews[username]);
+	if ( books[isbn].reviews[username] != review) {
+		books[isbn].reviews[username] = review;
+	}
+  }
+  return res.send(JSON.stringify(books[isbn].reviews,null,4))
+});
+
+public_users.get('/reviewbad/:isbn',function (req, res) {
+  const isbn = req.params.isbn;
+  const username = "myself";
+  const review = "bad";
+  if ( ! books[isbn].reviews[username] ) {
+        console.log("No review:", isbn, username);
+        books[isbn].reviews[username] =  review;
+  } else {
+        console.log("Review:", isbn, username, books[isbn].reviews[username]);
+        if ( books[isbn].reviews[username] != review) {
+                books[isbn].reviews[username] = review;
+        }
+  }
+  return res.send("The review for the book with ISBN " + isbn + " has been added/updated.");
+});
+
+public_users.get('/reviewdelete/:isbn',function (req, res) {
+  const isbn = req.params.isbn;
+  const username = "myself";
+  if ( books[isbn].reviews[username] ) {
+    console.log("Delete review:",isbn, username);
+    delete books[isbn].reviews[username];
+    return res.send("Reviews for the ISBN " + isbn + " posted by the user " + username + " deleted.");
+  } else {
+    return res.send("Thre is no review for ISBN " + isbn + " posted by the user " + username );
+  }
+});
+
+
+
+
+
 module.exports.general = public_users;

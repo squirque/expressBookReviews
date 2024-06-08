@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const session = require('express-session')
 const customer_routes = require('./router/auth_users.js').authenticated;
 const genl_routes = require('./router/general.js').general;
+const auth_users = require('./router/auth_users.js');
 
 const app = express();
 
@@ -32,11 +33,10 @@ app.use("/customer/auth/*", function auth(req,res,next){
 app.post("/register", (req,res) => {
   const username = req.body.username;
   const password = req.body.password;
-  console.log("New Register");
+//  console.log("New Register", username, password);
   if (username && password) {
-	  // isValid
-    if (!isValid(username)) {
-      users.push({"username":username,"password":password});
+    if (! auth_users.isValid(username)) {
+      auth_users.users.push({"username":username,"password":password});
       return res.status(200).json({message: "User successfully registred. Now you can login"});
     } else {
       return res.status(404).json({message: "User already exists!"});
@@ -51,3 +51,4 @@ app.use("/customer", customer_routes);
 app.use("/", genl_routes);
 
 app.listen(PORT,()=>console.log("Server is running"));
+
